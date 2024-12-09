@@ -4,11 +4,13 @@ close all
 s=tf('s')
 tf_G= zpk(-1 , [-4 , -2 , 1] , 10 )
 
+%%
 figure
 bode(tf_G)
 
 figure
-nyquist(tf_G)
+n = nyquistplot(tf_G);
+setoptions(n,'ShowFullContour', 'off')
 grid on
 
 
@@ -31,61 +33,22 @@ close all
 S=0.5 %delta
 k=2
 
-X=-1e2:0.001:1e2; %-2:0.1:1;
+X=-1e1:1e-5:1e1; %-2:0.1:1;
 
 S_X=S./X;
 N_deadzone = k - 2*k/pi*( asin(S_X) + S_X.*sqrt( 1-(S_X).^2 ) );
+figure
+plot(X,N_deadzone)
+
 
 inv_N_deadzone = -1./N_deadzone;
 
 figure
 hold on
-n = nyquistplot(tf_G)
+n = nyquistplot(tf_G);
 setoptions(n,'ShowFullContour', 'off')
 grid on
 plot( real(inv_N_deadzone) , imag(inv_N_deadzone),"DisplayName", "-1/N" ) %,'o-'
-
-
-%% Actuator 2 - Saturation with Dead zone
-close all
-
-S=1 %delta
-M=1
-
-X=-1e3:0.001:1e3; %-2:0.1:1;
-
-S_X=S./X;
-N_saturation = 4*M*sqrt(1-(S_X).^2)./(pi.*X);
-
-inv_N_saturation = -1./N_saturation;
-
-figure
-hold on
-n = nyquistplot(tf_G)
-setoptions(n,'ShowFullContour', 'off')
-grid on
-plot( real(inv_N_saturation) , imag(inv_N_saturation),"DisplayName", "-1/N" ) %,'o-'
-
-
-%% Actuator 3 - Histeresis relay
-close all
-
-h=2
-M=0.5
-
-X=-1e2:0.001:1e2; %-2:0.1:1;
-
-S_X=S./X;
-N_histeresis= 4*M*sqrt(1-(h/X)^2)/(pi*X)-i*4*h*M/(*pi*X^2) % if X>h , else =0
-
-inv_N_histeresis = -1./N_histeresis;
-
-figure
-hold on
-n = nyquistplot(tf_G)
-setoptions(n,'ShowFullContour', 'off')
-grid on
-plot( real(inv_N_histeresis) , imag(inv_N_histeresis),"DisplayName", "-1/N" ) %,'o-'
 
 %%
 
@@ -105,6 +68,64 @@ eq1= imag(G(w))==0
 sol1 = vpasolve(eq1,w,[0.1,100])
 
 eq2= N(x)*real(G(w)) == 1
+
+
+
+%% Actuator 2 - Saturation with Dead zone
+close all
+
+S=1 %delta
+M=1
+
+X=-1e1:1e-5:1e1; %-2:0.1:1;
+
+S_X=S./X;
+N_saturation = 4*M*sqrt(1-(S_X).^2)./(pi.*X);
+figure
+plot(X,N_saturation)
+
+inv_N_saturation = -1./N_saturation;
+
+figure
+hold on
+n = nyquistplot(tf_G);
+setoptions(n,'ShowFullContour', 'off')
+grid on
+plot( real(inv_N_saturation) , imag(inv_N_saturation),"DisplayName", "-1/N" ) %,'o-'
+
+
+%% Actuator 3 - Histeresis relay
+%close all
+
+h=2
+M=0.5
+
+X=-1e1:1e-5:1e1; %-2:0.1:1;
+
+% N_histeresis= 4*M*sqrt(1-(h/X)^2)/(pi*X)-i*4*h*M/(*pi*X^2) % if X>h , else =0
+% inv_N_histeresis = -1./N_histeresis;
+
+% Calculate N_histeresis for X <= h, else set it to 0
+N_histeresis = zeros(size(X)); % Initialize with zeros
+valid_indices =  X >= h; % Logical array where X is within [-h, h]
+N_histeresis(valid_indices) = 4 * M * sqrt(1 - (h ./ X(valid_indices)).^2) ./ (pi * X(valid_indices)) ...
+                              - 1i * 4 * h * M ./ (pi * X(valid_indices).^2); % Only calculate for X within the range
+
+figure
+plot(X,N_histeresis)
+
+% Inverse of N_histeresis (handle division by zero)
+inv_N_histeresis = zeros(size(N_histeresis)); % Initialize with zeros
+non_zero_indices = N_histeresis ~= 0; % Avoid division by zero
+inv_N_histeresis(non_zero_indices) = -1 ./ N_histeresis(non_zero_indices);
+
+figure
+hold on
+n = nyquistplot(tf_G);
+setoptions(n,'ShowFullContour', 'off')
+grid on
+plot( real(inv_N_histeresis) , imag(inv_N_histeresis),"DisplayName", "-1/N" ) %,'o-'
+
 
 
 sol = vpasolve([eq1,eq2],[w,x])
