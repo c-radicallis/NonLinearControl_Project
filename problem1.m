@@ -30,12 +30,12 @@ step(tf_G,[1,5])
 %% Actuator 1 - Dead zone
 close all
 
-S=0.5 %delta
+S_1=0.5 %delta
 k=2
 
 X=-1e1:1e-5:1e1; %-2:0.1:1;
 
-S_X=S./X;
+S_X=S_1./X;
 N_deadzone = k - 2*k/pi*( asin(S_X) + S_X.*sqrt( 1-(S_X).^2 ) );
 figure
 plot(X,N_deadzone)
@@ -59,7 +59,7 @@ G(w) = 10*(1i*w+1)/((1i*w+4)*(1i*w+2)*(1i*w-1))
 assume(w,"real")
 
 
-N(x) = k - 2*k/pi*( asin(S/x) + S/x.*sqrt( 1-(S/x).^2 ) )
+N(x) = k - 2*k/pi*( asin(S_1/x) + S_1/x.*sqrt( 1-(S_1/x).^2 ) )
 assume(x,"real")
 
 
@@ -74,13 +74,13 @@ eq2= N(x)*real(G(w)) == 1
 %% Actuator 2 - Saturation with Dead zone
 close all
 
-S=1 %delta
-M=1
+S_2=1 %delta
+M_2=1
 
 X=-1e1:1e-5:1e1; %-2:0.1:1;
 
-S_X=S./X;
-N_saturation = 4*M*sqrt(1-(S_X).^2)./(pi.*X);
+S_X=S_2./X;
+N_saturation = 4*M_2*sqrt(1-(S_X).^2)./(pi.*X);
 figure
 plot(X,N_saturation)
 
@@ -98,7 +98,7 @@ plot( real(inv_N_saturation) , imag(inv_N_saturation),"DisplayName", "-1/N" ) %,
 %close all
 
 h=2
-M=0.5
+M_3=0.5
 
 X=-1e1:1e-5:1e1; %-2:0.1:1;
 
@@ -108,8 +108,8 @@ X=-1e1:1e-5:1e1; %-2:0.1:1;
 % Calculate N_histeresis for X <= h, else set it to 0
 N_histeresis = zeros(size(X)); % Initialize with zeros
 valid_indices =  X >= h; % Logical array where X is within [-h, h]
-N_histeresis(valid_indices) = 4 * M * sqrt(1 - (h ./ X(valid_indices)).^2) ./ (pi * X(valid_indices)) ...
-                              - 1i * 4 * h * M ./ (pi * X(valid_indices).^2); % Only calculate for X within the range
+N_histeresis(valid_indices) = 4 * M_3 * sqrt(1 - (h ./ X(valid_indices)).^2) ./ (pi * X(valid_indices)) ...
+                              - 1i * 4 * h * M_3 ./ (pi * X(valid_indices).^2); % Only calculate for X within the range
 
 figure
 plot(X,N_histeresis)
