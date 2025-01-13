@@ -38,7 +38,7 @@ ic=-2
 S_1=0.5 %delta
 k=2
 
-X=-1e1:1e-3:1e1; %-2:0.1:1;
+X=-1e1:1e-5:1e1; %-2:0.1:1;
 
 S_X=S_1./X;
 N_deadzone = k - 2*k/pi*( asin(S_X) + S_X.*sqrt( 1-(S_X).^2 ) );
