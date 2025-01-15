@@ -65,8 +65,8 @@ plot(x, y, 'b', 'LineWidth', 1.5,"DisplayName","C=-0.73   R=0.5"); % Circle in b
 legend()%'Circle', 'Center');
 
 
-b=-1/(center-radius)
-a=-1/(center+radius)
+a=-1/(center-radius)
+b=-1/(center+radius)
 
 % Define the x-axis range
 x_range = linspace(-1, 1, 1000); % Adjust range as needed

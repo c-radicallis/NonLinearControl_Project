@@ -4,6 +4,8 @@ close all
 s=tf('s')
 tf_G= zpk(-1 , [-4 , -2 , 1] , 10 )
 
+%rlocus(tf_G)
+
 % %%
 % figure
 % bode(tf_G)
@@ -61,12 +63,16 @@ N_deadzone(valid_and_non_zero) = k - 2*k/pi * ( ...
 
 inv_N_deadzone = -1./N_deadzone;
 
-% figure
-% hold on
-% n = nyquistplot(tf_G);
-% setoptions(n,'ShowFullContour', 'off')
-% grid on
-% plot( real(inv_N_deadzone) , imag(inv_N_deadzone),"DisplayName", "-1/N" ) %,'o-'
+figure
+hold on
+n = nyquistplot(tf_G);
+setoptions(n,'ShowFullContour', 'off')
+grid on
+plot( real(inv_N_deadzone) , imag(inv_N_deadzone), '*-',"DisplayName", "-1/N" )
+xlabel('Real');
+ylabel('Imaginary');
+title('Nyquist plot of G  and  $\frac{-1}{N(X)}$ for Actuator 1 - Dead zone','interpreter', 'latex');
+legend(["G","$\frac{-1}{N(X)}$"],'interpreter', 'latex');
 
 % %%
 % 
@@ -115,20 +121,20 @@ N_saturation(valid_and_non_zero) = ...
 inv_N_saturation = zeros(size(X)); % Initialize with zeros
 inv_N_saturation(valid_and_non_zero) = -1 ./ N_saturation(valid_and_non_zero);
 
-% % Plot results
-% figure;
-% hold on;
-% n = nyquistplot(tf_G); % Assuming tf_G is defined elsewhere
-% setoptions(n, 'ShowFullContour', 'off');
-% grid on;
-% plot(real(inv_N_saturation), imag(inv_N_saturation), "DisplayName", "-1/N");
-% xlabel('Real');
-% ylabel('Imaginary');
-% title('Inverse of N_saturation with Division by Zero Handling');
-% legend show;
+% Plot results
+figure;
+hold on;
+n = nyquistplot(tf_G); % Assuming tf_G is defined elsewhere
+setoptions(n, 'ShowFullContour', 'off');
+grid on;
+plot(real(inv_N_saturation), imag(inv_N_saturation), '*', "DisplayName", "-1/N");
+xlabel('Real');
+ylabel('Imaginary');
+title('Nyquist plot of G  and  $\frac{-1}{N(X)}$ for Actuator 2 - Saturation with Dead zone','interpreter', 'latex');
+legend(["G","$\frac{-1}{N(X)}$"],'interpreter', 'latex');
+axis([-1.8 0.03 -0.9 0.3])
 
-
-%% Actuator 3 - Histeresis relay
+%% Actuator 3 - Hysteresis relay
 %close all
 
 A_3=2;
@@ -155,14 +161,17 @@ inv_N_histeresis = zeros(size(N_histeresis)); % Initialize with zeros
 non_zero_indices = N_histeresis ~= 0; % Avoid division by zero
 inv_N_histeresis(non_zero_indices) = -1 ./ N_histeresis(non_zero_indices);
 
-% figure
-% hold on
-% n = nyquistplot(tf_G);
-% setoptions(n,'ShowFullContour', 'off')
-% grid on
-% plot( real(inv_N_histeresis) , imag(inv_N_histeresis),"DisplayName", "-1/N" ) %,'o-'
-
-
+figure
+hold on
+n = nyquistplot(tf_G);
+setoptions(n,'ShowFullContour', 'off')
+grid on
+plot( real(inv_N_histeresis) , imag(inv_N_histeresis), '*',"DisplayName", "-1/N" ) %,'o-'
+xlabel('Real');
+ylabel('Imaginary');
+title('Nyquist plot of G  and  $\frac{-1}{N(X)}$ for Actuator 3 - Hysteresis','interpreter', 'latex');
+legend(["G","$\frac{-1}{N(X)}$"],'interpreter', 'latex');
+axis([-1.3 0.03 -3.3 0.5])
 % %%
 % pause
 % 
@@ -171,18 +180,21 @@ inv_N_histeresis(non_zero_indices) = -1 ./ N_histeresis(non_zero_indices);
 % G(sol.w)
 % N(sol.x)
 
-%% Nyquist
-
-figure
-hold on
-n = nyquistplot(tf_G);
-setoptions(n,'ShowFullContour', 'off')
-grid on
-legend()
-plot( real(inv_N_deadzone) , imag(inv_N_deadzone),'*-',"DisplayName", "Dead zone" );
-plot(real(inv_N_saturation), imag(inv_N_saturation), '*',"DisplayName", "Saturation w/Dead zone");
-plot( real(inv_N_histeresis) , imag(inv_N_histeresis),'*',"DisplayName", "Histeresis" );
-axis([-1.65 0.03 -3.2 0.3])
+% %% Nyquist
+% 
+% figure
+% hold on
+% n = nyquistplot(tf_G);
+% setoptions(n,'ShowFullContour', 'off')
+% grid on
+% legend()
+% plot( real(inv_N_deadzone) , imag(inv_N_deadzone),'*-',"DisplayName", "Dead zone" );
+% plot(real(inv_N_saturation), imag(inv_N_saturation), '*',"DisplayName", "Saturation w/Dead zone");
+% plot( real(inv_N_histeresis) , imag(inv_N_histeresis),'*',"DisplayName", "Histeresis" );
+% axis([-1.8 0.03 -3.3 0.6])
+% ylabel('Imaginary');
+% title('Nyquist plot of G  and  $\frac{-1}{N(X)}$','interpreter', 'latex');
+% legend(["G","$\frac{-1}{N(X)}$"],'interpreter', 'latex');
 
 %%
 % %% On-Off

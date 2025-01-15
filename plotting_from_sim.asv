@@ -1,0 +1,22 @@
+clear all
+close all
+
+Amp = 2
+Freq = logspace(1,100,5)
+
+A_1 = 0.5; % delta
+S_1=A_1;
+k = 2;
+
+A_2 = 1; % delta
+S_2=A_2;
+M_2 = 1;
+
+A_3=2;
+h=A_3;
+B_3=0.5;
+M_3=B_3;
+
+% plotting from simulink simulation results
+
+out=sim("problem1_model.slx")
