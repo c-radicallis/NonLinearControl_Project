@@ -1,4 +1,4 @@
-syms x1 x2 x3
+syms x1 x2 x3 v
 
 % Define the systems parts
 x = [x1;x2;x3];
@@ -26,4 +26,35 @@ invol_rank = rank(involute);
 disp(['The rank of the controlability matrix is: ', num2str(control_rank)])
 disp(['The rank of the involutibility matrix is: ', num2str(invol_rank)])
 
+%% ISFL
+
+q = x1 - x3;
+Lfq = jacobian(q,x)*f;
+Lf2q = jacobian(Lfq,x)*f;
+Lf3q = jacobian(Lf2q,x)*f;
+LgLf2q = jacobian(Lf2q,x)*g;
+
+Phi = [q; Lfq; Lf2q];
+
+A = Lf3q;
+B = LgLf2q;
+
+% poles: -1, -2, -10
+
+n1 = 20;
+n2 = 32;
+n3 = 13;
+
+u =(v-A-n1*Phi(1)-n2*Phi(2)-n3*Phi(3))/B;
+
+
 %% IOFL
+
+Lfh = jacobian(h,x)*f;
+Lf2h = jacobian(Lfh,x)*f;
+LgLfh = jacobian(Lfh,x)*g;
+
+u_iofl = (v-Lf2h-3*Lfh-2*h)/LgLfh;
+
+
+
